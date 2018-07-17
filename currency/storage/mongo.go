@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+	"fmt"
 	"log"
 
 	"github.com/EatsLemons/fa_currencies/store"
@@ -37,7 +39,38 @@ func NewMongoDB(address, usrname, pwd, dbname string) *MongoDB {
 	return &mongoClient
 }
 
-func (mdb *MongoDB) Update(currRates []store.Ratio) error {
+func (mdb *MongoDB) GetCurrPair(from, to string) (*store.Ratio, error) {
+	s := mdb.session.Copy()
+	defer s.Close()
+
+	c := s.DB(mdb.dbname).C(collection)
+	record := priceRecord{}
+	err := c.Find(bson.M{"from": from}).One(&record)
+	if err != nil {
+		log.Printf("[INFO] failed to find record for %s / %s, error: %s", from, to, err)
+		return nil, err
+	}
+
+	if _, ok := record.To[to]; !ok {
+		log.Printf("[INFO] there is no record %s / %s", from, to)
+		return nil, errors.New(fmt.Sprintf("there is no record %s / %s", from, to))
+	}
+
+	result := store.Ratio{
+		From: from,
+		To:   make(map[string]float64),
+	}
+
+	result.To[to] = record.To[to]
+
+	return &result, nil
+}
+
+func (mdb *MongoDB) Save(currRates []store.Ratio) error {
+	if currRates == nil || len(currRates) == 0 {
+		return errors.New("nothing to save")
+	}
+
 	s := mdb.session.Copy()
 	defer s.Close()
 
@@ -48,8 +81,8 @@ func (mdb *MongoDB) Update(currRates []store.Ratio) error {
 			To:   rate.To,
 		}
 
-		// TODO: maybe there is more efficiency way
-		_, err := c.Upsert(bson.M{"From": row.From}, row)
+		// TODO: maybe there is more efficiency way to save
+		_, err := c.Upsert(bson.M{"from": row.From}, row)
 		if err != nil {
 			return err
 		}

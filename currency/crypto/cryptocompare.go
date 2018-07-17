@@ -10,7 +10,7 @@ import (
 	"github.com/EatsLemons/fa_currencies/store"
 )
 
-// CryptoCompareAPI represents client from https://min-api.cryptocompare.com/
+// CryptoCompareAPI represents API client for https://min-api.cryptocompare.com/
 type CryptoCompareAPI struct {
 	address    string
 	httpClient *http.Client
@@ -53,11 +53,12 @@ func (cc *CryptoCompareAPI) Prices(cryptoCurrencies, fiatCurrencies []string) ([
 	tsyms := cc.makeCurrencyRQStrings(fiatCurrencies, 100)
 	result := make([]store.Ratio, 0, len(cryptoCurrencies))
 
+	// TODO: parallel it
 	for _, fsym := range fsyms {
 		for _, tsym := range tsyms {
 			requestURI := "/data/pricemulti?fsyms=" + fsym + "&tsyms=" + tsym
 			response := make(map[string]map[string]float64, 0)
-			log.Println("req")
+
 			err := cc.makeGetRequest(requestURI, &response, true)
 			if err != nil {
 				return nil, err
