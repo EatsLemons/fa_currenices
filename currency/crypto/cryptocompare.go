@@ -10,6 +10,7 @@ import (
 	"github.com/EatsLemons/fa_currencies/store"
 )
 
+// CryptoCompareAPI represents client from https://min-api.cryptocompare.com/
 type CryptoCompareAPI struct {
 	address    string
 	httpClient *http.Client

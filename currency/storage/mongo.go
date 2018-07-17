@@ -48,12 +48,11 @@ func (mdb *MongoDB) Update(currRates []store.Ratio) error {
 			To:   rate.To,
 		}
 
-		suc, err := c.Upsert(bson.M{"From": row.From}, row)
+		// TODO: maybe there is more efficiency way
+		_, err := c.Upsert(bson.M{"From": row.From}, row)
 		if err != nil {
 			return err
 		}
-
-		log.Println(suc.UpsertedId)
 	}
 
 	return nil
