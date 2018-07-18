@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/EatsLemons/fa_currencies/currency"
@@ -51,6 +52,9 @@ func (rs *Rest) getCurrenciesHandler(w http.ResponseWriter, r *http.Request) {
 		rs.makeJSONResponse(w, response)
 		return
 	}
+
+	to = strings.ToUpper(to)
+	from = strings.ToUpper(from)
 
 	record, findErr := rs.CurrService.Storage.GetCurrPair(from, to)
 	if findErr != nil {

@@ -17,19 +17,20 @@ type cryptoStock interface {
 	CoinsList() ([]string, error)
 }
 
-var fiatCurrencies = []string{"USD", "RUB", "EUR", "GBP"}
-
 type CurrencyService struct {
 	Storage     storage
 	cryptoStock cryptoStock
 	reloadTime  int
+
+	fiatCurrencies []string
 }
 
-func NewCurrencyService(s storage, c cryptoStock, reloadTime int) *CurrencyService {
+func NewCurrencyService(s storage, c cryptoStock, reloadTime int, fiatCurr []string) *CurrencyService {
 	cs := CurrencyService{
-		Storage:     s,
-		cryptoStock: c,
-		reloadTime:  reloadTime,
+		Storage:        s,
+		cryptoStock:    c,
+		reloadTime:     reloadTime,
+		fiatCurrencies: fiatCurr,
 	}
 
 	return &cs
@@ -58,7 +59,7 @@ func (cs *CurrencyService) getCurrencyData() []store.Ratio {
 		return nil
 	}
 
-	rates, priceErr := cs.cryptoStock.Prices(crCoins, fiatCurrencies)
+	rates, priceErr := cs.cryptoStock.Prices(crCoins, cs.fiatCurrencies)
 	if priceErr != nil {
 		log.Println("[WARN] fail while reqeusts currency rates %s", priceErr)
 		return nil

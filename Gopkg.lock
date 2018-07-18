@@ -13,9 +13,27 @@
   revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
   version = "v1.6.2"
 
+[[projects]]
+  name = "github.com/jessevdk/go-flags"
+  packages = ["."]
+  revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
+  version = "v1.4.0"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/mgo.v2"
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
+  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "92634cf611edb480aa3db72a0823fbbcf1caf231fc8a87b646e9cd762433690f"
+  inputs-digest = "09f2b6c0b9b4572ab440b95dbfb5e9e8e899f794920c5acb7833b4df8f80d5af"
   solver-name = "gps-cdcl"
   solver-version = 1
