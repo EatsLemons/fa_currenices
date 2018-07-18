@@ -23,6 +23,8 @@ var opts struct {
 	MongoDBPassword string `long:"mongodb-password" env:"MONGODB_PASSWORD" default:"" description:"MongoDB password"`
 	MongoDBBaseName string `long:"mongodb-base-name" env:"MONGODB_BASE_NAME" default:"fa_test" description:"MongoDB base name"`
 
+	CryptoCompareDomain string `long:"cc-domain" env:"CC_DOMAIN" default:"https://min-api.cryptocompare.com" description:"CC domain to api requests"`
+
 	FiatCurrencies []string `long:"fiat-currencies" env:"FIAT_CURRENCY" default:"USD" default:"EUR" default:"GBR" default:"RUB" description:"Set the fiat currencies"`
 }
 
@@ -36,7 +38,7 @@ func main() {
 	log.Println("Started with:")
 	log.Printf("%+v", opts)
 
-	ccAPI := crypto.NewCryptoCompareAPIClient()
+	ccAPI := crypto.NewCryptoCompareAPIClient(opts.CryptoCompareDomain)
 	mongo := storage.NewMongoDB(opts.MongoDBHost, opts.MongoDBLogin, opts.MongoDBPassword, opts.MongoDBBaseName)
 
 	currencyService := currency.NewCurrencyService(mongo, ccAPI, opts.CurrCacheReload, opts.FiatCurrencies)

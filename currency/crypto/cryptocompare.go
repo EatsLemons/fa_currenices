@@ -16,9 +16,9 @@ type CryptoCompareAPI struct {
 	httpClient *http.Client
 }
 
-func NewCryptoCompareAPIClient() *CryptoCompareAPI {
+func NewCryptoCompareAPIClient(address string) *CryptoCompareAPI {
 	client := CryptoCompareAPI{
-		address: "https://min-api.cryptocompare.com",
+		address: address,
 		httpClient: &http.Client{
 			Timeout: 5 * time.Second,
 		},
