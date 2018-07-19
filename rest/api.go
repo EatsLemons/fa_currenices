@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,7 +23,7 @@ func (rs *Rest) Run(port int) {
 	log.Printf("[INFO] server started at :%d", port)
 
 	r := mux.NewRouter()
-
+	r.Use(rs.recoverWrap)
 	r.HandleFunc("/api/v1/currency", rs.getCurrenciesHandler).Methods("GET")
 
 	rs.httpServer = &http.Server{
@@ -37,8 +38,34 @@ func (rs *Rest) Run(port int) {
 	log.Printf("[WARN] http server terminated, %s", err)
 }
 
+func (rs *Rest) recoverWrap(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			var err error
+			if r := recover(); r != nil {
+				switch t := r.(type) {
+				case string:
+					err = errors.New(t)
+				case error:
+					err = t
+				default:
+					err = errors.New("unknown error")
+				}
+
+				response := rs.newResponseItem()
+				response.Errors = append(response.Errors, ErrorRs{Message: err.Error()})
+				rs.makeJSONResponse(w, response)
+
+			}
+		}()
+
+		h.ServeHTTP(w, r)
+	})
+}
+
 func (rs *Rest) getCurrenciesHandler(w http.ResponseWriter, r *http.Request) {
 	response := rs.newResponseItem()
+
 	from := r.URL.Query().Get("from")
 	if from == "" {
 		response.Errors = append(response.Errors, ErrorRs{Message: "from is empty"})

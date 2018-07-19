@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/EatsLemons/fa_currencies/currency"
 	"github.com/EatsLemons/fa_currencies/currency/crypto"
@@ -34,6 +35,8 @@ func main() {
 		log.Println(e.Error())
 		os.Exit(1)
 	}
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.Println("Started with:")
 	log.Printf("%+v", opts)
