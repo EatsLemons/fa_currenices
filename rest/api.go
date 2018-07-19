@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/EatsLemons/fa_currencies/currency"
+
 	"github.com/gorilla/mux"
 )
 
@@ -54,6 +55,7 @@ func (rs *Rest) recoverWrap(h http.Handler) http.Handler {
 
 				response := rs.newResponseItem()
 				response.Errors = append(response.Errors, ErrorRs{Message: err.Error()})
+				log.Println("[WARN] handled error: ", err.Error())
 				rs.makeJSONResponse(w, response)
 
 			}
