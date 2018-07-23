@@ -54,5 +54,5 @@ func main() {
 		CurrService: currencyService,
 	}
 
-	srv.Run(8080)
+	srv.Run(opts.Port)
 }
